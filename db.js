@@ -23,7 +23,7 @@ async function find(col, tgl) {
     // const client = new MongoClient(process.env.MONGOURL);
     await client.connect();
     // console.log('Connected successfully to server');
-    const db = client.db(process.env.MONGO_DBNAME);
+    const db = client.db(dbName);
     const collection = db.collection(col);
     let result = collection.find({"payload.user_terkait.hp":{$exists:true}, "payload.due_date":tgl})
     return result.toArray()
@@ -39,7 +39,7 @@ async function update (col, id, data) {
   try {
     await client.connect();
     // database and collection code goes here
-    const db = client.db(process.env.MONGO_DBNAME);
+    const db = client.db(dbName);
     const coll = db.collection(col);
     // update code goes here
     const filter = {"_id":id};
@@ -49,12 +49,14 @@ async function update (col, id, data) {
     const result = await coll.updateOne(filter, updateDoc);
     // display the results of your operation
     console.log("Number of documents updated: " + result.modifiedCount);
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
+  } 
+  catch (error) {
+    console.log(error)
+  } 
 }
 
+
+// find('issue_logs', '2022-12-03')
 //   main()
 //     .then(console.log)
 //     .catch(console.error)
@@ -64,7 +66,7 @@ async function update (col, id, data) {
 // async function find(col){
 //     await client.connect();
 //     console.log('Connected successfully to server');
-//     const db = client.db(process.env.MONGO_DBNAME);
+//     const db = client.db(dbName);
 //     const collection = db.collection(col);
 //     let result = collection.find({"mode":'10'});
 

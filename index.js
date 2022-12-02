@@ -8,8 +8,9 @@ const tomorrow = new Date(today);
 tomorrow.setDate(tomorrow.getDate()+1);
 tom = `${tomorrow.getFullYear()}-${(tomorrow.getMonth() + 1).toString().padStart(2, '0')}-${tomorrow.getDate().toString().padStart(2, '0')}`;
 console.log("application running ..")
+// console.log(tom)
 // schedule job
-schedule.scheduleJob(' 02 14 * * *', function(){
+schedule.scheduleJob(' 35 22 * * *', function(){
   console.log('job start...')
  async function sch()
   {
