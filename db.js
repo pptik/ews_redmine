@@ -1,13 +1,15 @@
 require('dotenv').config();
 const { MongoClient } = require('mongodb');
-const client = new MongoClient(`mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}`);
+const url = process.env.DB_URL;
+const dbName = process.env.DB_NAME;
+const client = new MongoClient(url);;
 
 async function add(col, val) {
   // Use connect method to connect to the server
   try {
     await client.connect();
     console.log('Connected successfully to server');
-    const db = client.db(process.env.MONGO_DBNAME);
+    const db = client.db(dbName);
     const collection = db.collection(col);
     if (collection.insertOne(val)) console.log(`Insertion Successful`);
   } catch (error) {

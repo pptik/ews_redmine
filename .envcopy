@@ -1,0 +1,16 @@
+# mongodb
+MONGO_HOST=127.0.0.1
+MONGO_PORT=27017
+MONGO_USER=root
+MONGO_PASS=root123
+MONGO_DBNAME=logs_redmine
+
+# MONGO_HOST=database2.pptik.id
+# MONGO_PORT=27017
+# MONGO_USER=redmine
+# MONGO_PASS=r3Dm1|0O!
+# MONGO_DBNAME=redmine
+
+
+WA_HOST=https://chatme.pptik.id:5118/api.v1/messages/notification
+WA_TOKEN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJndWlkIjoiNTk0MDMxNTQtN2Y1Ni00ZjZlLTgzMDItZjRiMDA4NTY5MzBiIiwiZW1haWwiOiJhc2VwLmlvdEB1YmwuYWMuaWQiLCJyb2xlIjoic3VwZXIiLCJpYXQiOjE2NjM3NDc5ODgsImV4cCI6MTY5NDg1MTk4OH0.DAyGxMl44nj-71gcJ61PAQMYJs_ggXdnhto-YU6c4no'
