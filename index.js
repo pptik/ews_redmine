@@ -1,15 +1,15 @@
-const schedule = require('node-schedule');
-require('dotenv').config();
+import * as schedule from 'node-schedule'
+import * as db from './db.js'
+import * as wa from './sendwa.js'
+import * as dotenv from 'dotenv'
 
-const db = require('./db');
-const wa = require('./sendwa');
+dotenv.config()
+
 const today = new Date(Date.now());
 const tomorrow = new Date(today);
 tomorrow.setDate(tomorrow.getDate()+1);
-tom = `${tomorrow.getFullYear()}-${(tomorrow.getMonth() + 1).toString().padStart(2, '0')}-${tomorrow.getDate().toString().padStart(2, '0')}`;
+let tom = `${tomorrow.getFullYear()}-${(tomorrow.getMonth() + 1).toString().padStart(2, '0')}-${tomorrow.getDate().toString().padStart(2, '0')}`;
 console.log("application running ..")
-// console.log(tom)
-// schedule job
 schedule.scheduleJob(' 35 22 * * *', function(){
   console.log('job start...')
  async function sch()
@@ -33,4 +33,4 @@ schedule.scheduleJob(' 35 22 * * *', function(){
   }
   sch()
      
-  });
+});

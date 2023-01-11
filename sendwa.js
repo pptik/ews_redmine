@@ -1,12 +1,10 @@
-require('dotenv').config();
-const axios = require('axios');
+import * as dotenv from 'dotenv'
+dotenv.config()
+import axios, * as others from 'axios';
 var st;
-async function send (no, tit, con){
-
-    try{
-
-        await axios({
-        
+async function send(no, tit, con) {
+    try {
+        let st = await axios({
             method: 'post',
             url: process.env.WA_HOST,
             data: {
@@ -16,24 +14,20 @@ async function send (no, tit, con){
             },
             headers: {
                 'Content-Type': 'application/json',
-                'x-access-token':process.env.WA_TOKEN
-              }
-          }).then (function (response){
-            // console.log(response.data);
-            st = response.data
+                'x-access-token': process.env.WA_TOKEN
+            }
         })
-        return st
+        return st.data
     }
-    catch(error)
-    {
-        console.log(error.response.data)
-        return error.response.data
+    catch (error) {
+        console.log(error)
+        return error
 
     }
-    
-        
+
+
 };
 
 
 
-module.exports={send}
+export { send }

@@ -1,5 +1,8 @@
-require('dotenv').config();
-const { MongoClient } = require('mongodb');
+import * as dotenv from 'dotenv'
+import { MongoClient } from 'mongodb';
+
+dotenv.config();
+
 const url = process.env.DB_URL;
 const dbName = process.env.DB_NAME;
 const client = new MongoClient(url);;
@@ -80,4 +83,4 @@ async function update (col, id, data) {
     // console.log(result)
 // }
 
-module.exports= { add, find, update }
+export { add, find, update }
