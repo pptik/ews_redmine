@@ -1,36 +1,63 @@
 import * as schedule from 'node-schedule'
-import * as db from './db.js'
+import axios from 'axios'
+// import * as db from './db.js'
 import * as wa from './sendwa.js'
 import * as dotenv from 'dotenv'
+import moment from 'moment'
 
 dotenv.config()
 
-const today = new Date(Date.now());
-const tomorrow = new Date(today);
-tomorrow.setDate(tomorrow.getDate()+1);
-let tom = `${tomorrow.getFullYear()}-${(tomorrow.getMonth() + 1).toString().padStart(2, '0')}-${tomorrow.getDate().toString().padStart(2, '0')}`;
-console.log("application running ..")
-schedule.scheduleJob(' 35 22 * * *', function(){
-  console.log('job start...')
- async function sch()
-  {
-    const dt = await db.find('issue_logs', tom);
-    if (dt.length)
-    {
-      // dt.forEach(d => ns= wa.send(`${d.payload.user_terkait.hp}`, 'Redmine', 'issue besok due date'));
-      // console.log(d)
-       dt.forEach(async function(d) {
-        ns = await wa.send(`${d.payload.user_terkait.hp}`, 'Redmine', `Reminder: Due date issue [${d.payload.issue_id}]: ${d.payload.issue_subject}, project [${d.payload.project.project_name}] pada tanggal ${d.payload.due_date}`);
-        d.payload.status_notifikasi.ews = ns;
-        await db.update('issue_logs',d._id, d.payload.status_notifikasi)
-        // console.log(d)
-
-    });
-    }else{
-
-      console.log('tidak ada issue yang due date nya besok');
-    }
+// Define the function you want to run
+function cekIssue() {
+  console.log('Mulai Mengecek Issue')
+  const yesterday = moment().subtract(1, 'day');
+  const headers = {
+    'Content-type': 'application/json',
+    'X-Redmine-API-Key': process.env.API_KEY
   }
-  sch()
-     
-});
+  axios.get(process.env.API_URL + "/issues.json", { headers })
+    .then(function (response) {
+      if(response.status == 200) {
+        for(let i = 0; i < response.data.issues.length; i++) {
+          if(response.data.issues[i].status.is_closed == false) {
+            if(response.data.issues[i].due_date != null) {
+              console.log("mengecek tugas " + response.data.issues[i].subject)
+              console.log("deadline " + response.data.issues[i].due_date)
+              let duedate = moment(response.data.issues[i].due_date)
+              if (duedate.isSameOrAfter(yesterday, 'day')) {
+                if(response.data.issues[i].assigned_to != null) {
+                  console.log('Sudah mepet deadline, tolong bereskan tugas ' + response.data.issues[i].assigned_to['name'] + "(ID:" + response.data.issues[i].assigned_to['id'] + ") : " + response.data.issues[i].subject);
+                  // extract nomor hp dari user
+                  axios.get(process.env.API_URL + "/users/" + response.data.issues[i].assigned_to['id'] + ".json", { headers })
+                  .then(function (response_users) {
+                    if(response_users.status == 200) {
+                      if(response_users.data.user.custom_fields != null) {
+                        let nomor_hp = response_users.data.user.custom_fields[0].value
+                        wa.send(nomor_hp, 'Redmine', 'Sudah mepet deadline, tolong bereskan tugas ' + response.data.issues[i].assigned_to['name'] + " : " + response.data.issues[i].subject);
+                      }
+                    }
+                  })
+                  .catch(function (error_users) {
+                    console.log(error_users)
+                  })
+                }
+              }
+            }
+          }
+        }
+      }
+      console.log('Selesai Mengecek Issue')
+    })
+    .catch(function (error) {
+      console.log(error)
+    })
+}
+
+const scheduledTime = new Date()
+scheduledTime.setHours(1)
+scheduledTime.setMinutes(0)
+scheduledTime.setSeconds(0)
+
+schedule.scheduleJob({ hour: scheduledTime.getHours(), minute: scheduledTime.getMinutes() }, function() {
+  cekIssue()
+})
