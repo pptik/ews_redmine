@@ -13,7 +13,7 @@ function cekIssue() {
   const yesterday = moment().subtract(1, 'day');
   const headers = {
     'Content-type': 'application/json',
-    'X-Redmine-API-Key': '15d7bfd7c437ed7095c3725fef2c5d62ff83bb8f'
+    'X-Redmine-API-Key': process.env.API_KEY
   }
   axios.get(process.env.API_URL + "/issues.json", { headers })
     .then(function (response) {
