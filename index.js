@@ -33,7 +33,7 @@ function cekIssue() {
                     if(response_users.status == 200) {
                       if(response_users.data.user.custom_fields != null) {
                         let nomor_hp = response_users.data.user.custom_fields[0].value
-                        wa.send(nomor_hp, 'Redmine', process.env.AI_NAME + ' mengingatkan ' + response.data.issues[i].assigned_to['name'] + "(ID:" + response.data.issues[i].assigned_to['id'] + ") mohon segera selesaikan tugas " + response.data.issues[i].subject + "dan close jika sudah selesai.");
+                        wa.send(nomor_hp, 'Redmine', process.env.AI_NAME + ' mengingatkan ' + response.data.issues[i].assigned_to['name'] + " (ID:" + response.data.issues[i].assigned_to['id'] + ") mohon segera selesaikan tugas " + response.data.issues[i].subject + " dan close jika sudah selesai.");
                       }
                     }
                   })
