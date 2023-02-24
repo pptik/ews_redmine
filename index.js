@@ -26,14 +26,14 @@ function cekIssue() {
               let duedate = moment(response.data.issues[i].due_date)
               if (duedate.isSameOrAfter(yesterday, 'day')) {
                 if(response.data.issues[i].assigned_to != null) {
-                  console.log('Sudah mepet deadline, tolong bereskan tugas ' + response.data.issues[i].assigned_to['name'] + "(ID:" + response.data.issues[i].assigned_to['id'] + ") : " + response.data.issues[i].subject);
+                  console.log(process.env.AI_NAME + ' mengingatkan ' + response.data.issues[i].assigned_to['name'] + "(ID:" + response.data.issues[i].assigned_to['id'] + ") mohon segera selesaikan tugas " + response.data.issues[i].subject + "dan close jika sudah selesai.");
                   // extract nomor hp dari user
                   axios.get(process.env.API_URL + "/users/" + response.data.issues[i].assigned_to['id'] + ".json", { headers })
                   .then(function (response_users) {
                     if(response_users.status == 200) {
                       if(response_users.data.user.custom_fields != null) {
                         let nomor_hp = response_users.data.user.custom_fields[0].value
-                        wa.send(nomor_hp, 'Redmine', 'Sudah mepet deadline, tolong bereskan tugas ' + response.data.issues[i].assigned_to['name'] + " : " + response.data.issues[i].subject);
+                        wa.send(nomor_hp, 'Redmine', process.env.AI_NAME + ' mengingatkan ' + response.data.issues[i].assigned_to['name'] + "(ID:" + response.data.issues[i].assigned_to['id'] + ") mohon segera selesaikan tugas " + response.data.issues[i].subject + "dan close jika sudah selesai.");
                       }
                     }
                   })
