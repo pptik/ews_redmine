@@ -54,9 +54,8 @@ function cekIssue() {
 }
 
 const scheduledTime = new Date()
-scheduledTime.setHours(1)
-scheduledTime.setMinutes(0)
-scheduledTime.setSeconds(0)
+scheduledTime.setHours(process.env.SET_JAM)
+scheduledTime.setMinutes(process.env.SET_MENIT)
 
 schedule.scheduleJob({ hour: scheduledTime.getHours(), minute: scheduledTime.getMinutes() }, function() {
   cekIssue()
