@@ -20,12 +20,12 @@ function cekIssue() {
     if (response.status !== 200) return;
     const { issues } = response.data;
     const promises = issues.reduce((acc, issue) => {
-      const { status, due_date, assigned_to, subject } = issue;
+      const { id, project, status, due_date, assigned_to, subject } = issue;
       if (status.is_closed || !due_date) return acc;
       const duedate = moment(due_date);
-      if (duedate.isBefore(yesterday, 'day')) return acc;
+      if (duedate.isBefore(yesterday, 'day') || duedate.isAfter(moment().add(3, 'day'), 'day')) return acc;
       if (!assigned_to) return acc;
-      console.log(`Sudah mepet deadline, tolong bereskan tugas ${assigned_to.name} (ID:${assigned_to.id}): ${subject}`);
+      // console.log(`Sudah mepet deadline, tolong bereskan tugas ${assigned_to.name} (ID:${assigned_to.id}): ${subject}`);
       acc.push(
         axios.get(`${process.env.API_URL}/users/${assigned_to.id}.json`, { headers })
           .then(response_users => {
@@ -33,7 +33,11 @@ function cekIssue() {
             const { custom_fields } = response_users.data.user;
             if (!custom_fields) return;
             const nomor_hp = custom_fields[0].value;
-            return wa.send(nomor_hp, 'Redmine', `Sudah mepet deadline, tolong bereskan tugas ${assigned_to.name}: ${subject}`);
+            const link_issue = `${process.env.API_URL}/issues/${id}`;
+            const link_project = `${process.env.API_URL}/projects/${project.id}`;
+            const messageWa = `Sudah mepet deadline, tolong bereskan tugas ${assigned_to.name}: ${subject}. Link Issue : ${link_issue} dan Link Project : ${link_project}`;
+            console.log(`LOG [${moment().format()}] : ${messageWa}`);
+            return wa.send(nomor_hp, 'Redmine', messageWa);
           })
           .catch(error_users => {
             console.log(error_users);
@@ -55,8 +59,8 @@ function cekIssue() {
 }
 
 const scheduledTime = new Date()
-scheduledTime.setHours(1)
-scheduledTime.setMinutes(0)
+scheduledTime.setHours(process.env.SET_JAM)
+scheduledTime.setMinutes(process.env.SET_MENIT)
 scheduledTime.setSeconds(0)
 
 schedule.scheduleJob({ hour: scheduledTime.getHours(), minute: scheduledTime.getMinutes() }, function() {
