@@ -15,7 +15,7 @@ function cekIssue() {
     'Content-type': 'application/json',
     'X-Redmine-API-Key': process.env.API_KEY
   }
-  axios.get(`${process.env.API_URL}/issues.json`, { headers })
+  axios.get(`${process.env.API_URL}/issues.json?limit=100`, { headers })
     .then(response => {
       if (response.status !== 200) return;
       const { issues } = response.data;
