@@ -15,7 +15,7 @@ function cekIssue() {
     'Content-type': 'application/json',
     'X-Redmine-API-Key': process.env.API_KEY
   }
-  axios.get(`${process.env.API_URL}/issues.json?limit=100`, { headers })
+  axios.get(`${process.env.API_URL}/issues.json?limit=50`, { headers })
     .then(response => {
       if (response.status !== 200) return;
       const { issues } = response.data;
@@ -31,7 +31,7 @@ function cekIssue() {
           .then(response_users => {
             if (response_users.status !== 200) return;
             const { custom_fields } = response_users.data.user;
-            if (!custom_fields) return;
+            if (!custom_fields || custom_fields[0].value == "") return;
             const nomor_hp = custom_fields[0].value;
             const link_issue = `${process.env.API_URL}/issues/${id}`;
             const link_project = `${process.env.API_URL}/projects/${project.id}`;
@@ -48,18 +48,23 @@ function cekIssue() {
       });
 
       Promise.all(issuePromises)
-        .then(() => {
-          const promises = [];
+        .then(async () => {
           for (const nomor_hp in messagesByAssignedTo) {
+            console.log(nomor_hp)
             const { assigned_to, messages } = messagesByAssignedTo[nomor_hp];
-            let combinedMessage = `${process.env.AI_NAME} mengingatkan mohon segera selesaikan tugas :\n\n`;
+            let combinedMessage = `${process.env.AI_NAME} mengingatkan ${assigned_to.name}, mohon segera selesaikan tugas : `;
             messages.forEach((message, index) => {
               const { subject, link_issue, link_project } = message;
-              combinedMessage += `${index + 1}. ${subject}. Link Issue : ${link_issue} dan Link Project : ${link_project}. \n\n`;
+              combinedMessage += `${index + 1}. ${subject}. Link Issue : ${link_issue} dan Link Project : ${link_project}. `;
             });
-            combinedMessage += "Jangan lupa untuk CLOSE issue jika sudah selesai.\n\n";
-            console.log(`LOG [${moment().format()}]  to ${assigned_to.name} : \n\n ${combinedMessage}`);
-            // promises.push(wa.send(nomor_hp, 'Redmine', combinedMessage));
+            combinedMessage += "Jangan lupa untuk CLOSE issue jika sudah selesai.";
+
+            try {
+              await wa.send(nomor_hp, 'Redmine', combinedMessage);
+              console.log(`LOG [${moment().format()}]  to ${assigned_to.name} : \n\n ${combinedMessage} \n\n`);
+            } catch (error) {
+              console.log("error sending wa");
+            }
           }
         })
         .catch(error => {
@@ -70,6 +75,7 @@ function cekIssue() {
       console.log('Error in getting issues:', error);
     });
 
+  console.log('Selesai Mengecek Issue')
 }
 
 const scheduledTime = new Date()

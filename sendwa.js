@@ -20,7 +20,7 @@ async function send(no, tit, con) {
         return st.data
     }
     catch (error) {
-        console.log(error)
+        // console.log(error)
         return error
 
     }
